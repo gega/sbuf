@@ -16,7 +16,7 @@ name             | default | note
 -----------------|---------|------------
 SBF_SW           | 240     | width
 SBF_SH           | 240     | height
-SBF_MAX_SECTIONS |   8     | max number of sections in a scnline, depends on the complexity of the object
+SBF_MAX_SECTIONS |   8     | max number of sections in a scanline, depends on the complexity of the object
 
 ## RAM
 
