@@ -5,7 +5,7 @@ Scanline buffering for generic rendering engines on serial displays
 
 - Scanline based buffering
 - No dynamic memory allocation
-- Minimal RAM needed (two lines)
+- Minimal RAM needed
 - Double buffering to support DMA
 - Overlappig segments supported
 - Interlacing
