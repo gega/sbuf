@@ -52,11 +52,24 @@ void sbf_add_segment(int y, int x, int w, uint16_t col, int flip);
 #define SBF_GETW(sl) ((uint8_t)(((sl)>>16)&0xff))
 #define SBF_GETCOL(sl) ((uint16_t)((sl)&0xffff))
 static uint32_t sbf_scanline[SBF_SH][SBF_MAX_SECTIONS];
-_Static_assert(SBF_MAX_SECTIONS<16,"SBF_MAX_SECTIONS must fit in a nibble");
+
+#if SBF_MAX_SECTIONS<16
+
 static uint8_t sbf_section_cnt[SBF_SH/2]; // one nibble for scanline
 #define SBF_GETCNT(slnc,y) ((slnc[(y)/2]>>(((y)%2)!=0?0:4))&0x0f)
 #define SBF_SETCNT(slnc,y,len) do { static uint8_t mask[2]={0x0f,0xf0};  slnc[(y)/2]&=mask[(y)%2]; slnc[(y)/2]|=(len)<<(4*!(y%2)); } while(0)
 
+#elif SBF_MAX_SECTIONS<256
+
+static uint8_t sbf_section_cnt[SBF_SH];
+#define SBF_GETCNT(slnc,y) (slnc[(y)])
+#define SBF_SETCNT(slnc,y,len) do { slnc[(y)]=(len); } while(0)
+
+#else
+
+#error SBF_MAX_SECTIONS too large
+
+#endif
 
 void sbf_init(void)
 {
@@ -82,9 +95,7 @@ static void sbf_render_line(int y, fill_scanline_type *fill_scanline, int flip)
     if(xx>x1) x1=xx;
     if((y%2)==flip) continue;
     col=SBF_GETCOL(sbf_scanline[y][i]);
-    sbf_line_buf[sbf_line_buf_idx][x]=0xffff;
-    for(++x;x<(xx-1);x++) sbf_line_buf[sbf_line_buf_idx][x]=col;
-    sbf_line_buf[sbf_line_buf_idx][x]=0xffff;
+    for(;x<(xx-1);x++) sbf_line_buf[sbf_line_buf_idx][x]=col;
   }
   if(x1>=0)
   {
